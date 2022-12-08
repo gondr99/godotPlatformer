@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+signal died
+
 var gravity = 1000
 var velocity = Vector2.ZERO
 var maxHorizontalSpeed = 125
@@ -13,7 +15,7 @@ export(float) var lerpFactor = 1.8
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	$HazardArea2D.connect("area_entered", self, "on_hazard_area_entered")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -74,3 +76,7 @@ func update_animation():
 	if(moveVec.x != 0):
 		$AnimatedPlayerSprite.flip_h = true if moveVec.x > 0 else false
 		
+		
+func on_hazard_area_entered(other_area2d):
+	#print("Die")
+	emit_signal("died")
