@@ -5,26 +5,34 @@ signal died
 
 enum State { NORMAL, DASHING }
 
+
+
 var gravity = 1000
 var velocity = Vector2.ZERO
 var maxHorizontalSpeed: float = 125
-var minDashSpeed: float = 200
-var maxDashSpeed: float = 500
+var minDashSpeed: float = 250
+var maxDashSpeed: float = 450
 var horizontalAcceleration: float = 1500
-var jumpSpeed: float = 350
+var jumpSpeed: float = 320
 var jumpTerminateMultiplier: float = 4
 
 var currentState = State.NORMAL
 
 var hasDoubleJump: bool = false  #더블점프 했냐 
+var hasDash: bool = false #대시 가지고 있냐?
 
 var isStateNew: bool = false # 새로운 상태로 전환되었는가?
 
+var defaultHazardMask = 0  #기본 위협 충돌 마스크
+
+#마스크를 이용해서 대시중일때는 이 마스크에 닿은 녀석들만 처리한다.
+export(int, LAYERS_2D_PHYSICS) var dashHazardMask
 export(float) var lerpFactor = 1.8
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$HazardArea2D.connect("area_entered", self, "on_hazard_area_entered")
+	defaultHazardMask = $HazardArea2D.collision_mask
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -43,8 +51,11 @@ func change_state(newState):
 	isStateNew = true
 
 func process_normal(delta):
+	if isStateNew == true :
+		$DashArea2D/CollisionShape2D.disabled = true
+		$HazardArea2D.collision_mask = defaultHazardMask #기본 마스크로 변경
+		
 	var moveVector = get_movement_vector()
-	
 	#velocity.x = moveVector.x * maxHorizontalSpeed 
 	velocity.x += moveVector.x * horizontalAcceleration * delta
 	
@@ -75,22 +86,36 @@ func process_normal(delta):
 	
 	if(is_on_floor()):
 		hasDoubleJump = true
+		hasDash = true #땅에 닿으면 다시 대시 가능
 	
-	if Input.is_action_just_pressed("dash"):
+	if hasDash && Input.is_action_just_pressed("dash"):
 		#change_state(State.DASHING) 
 		call_deferred("change_state", State.DASHING) #모든 작업이 완료되고 idle 타임에 이뤄지도록 call_deferred를 호출
+		hasDash = false #대시 다시 못하도록 잠그
 	
 	update_animation()
 
+#대시 키를 눌렀을 때 작동
 func process_dash(delta):
-	if isStateNew :
-		velocity = Vector2(maxDashSpeed, 0)	
+	if isStateNew == true :
+		$HazardArea2D.collision_mask = dashHazardMask  #대시할때는 적에게 맞아죽지 않게
+		$DashArea2D/CollisionShape2D.disabled = false
+		$AnimatedPlayerSprite.play("jump")
+		var velocityMod : float = 1
+		var moveVector = get_movement_vector()
+		if moveVector.x != 0:
+			velocityMod = sign(moveVector.x) #x 값의 부호를 가져온다. 0 -1, 1 중 리턴
+		else:
+			velocityMod = 1 if $AnimatedPlayerSprite.flip_h else -1
+			
+		velocity = Vector2(maxDashSpeed * velocityMod, 0)
 	
 	velocity = move_and_slide(velocity, Vector2.UP)
 	#velocity.x = lerp(0, velocity.x, pow(2, -20 * delta)) #거꾸로 lerp방식
 	velocity.x = lerp(velocity.x, 0, lerpFactor*2* delta)
 	
-	if velocity.x < minDashSpeed:
+	#대시 상태에서 다시 노말상태로 변경시키는 조건
+	if abs( velocity.x) < minDashSpeed:
 		call_deferred("change_state", State.NORMAL)
 
 func get_movement_vector():
