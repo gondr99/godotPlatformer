@@ -8,6 +8,22 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "KinematicBody2D",
+"class": "EnemySpike",
+"language": "GDScript",
+"path": "res://scenes/Enemy.gd"
+}, {
+"base": "KinematicBody2D",
+"class": "PlayerGD",
+"language": "GDScript",
+"path": "res://scenes/Player.gd"
+} ]
+_global_script_class_icons={
+"EnemySpike": "",
+"PlayerGD": ""
+}
+
 [application]
 
 config/name="Godotplatformer"
@@ -70,9 +86,15 @@ jump={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":32,"unicode":0,"echo":false,"script":null)
  ]
 }
+dash={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":16777237,"unicode":0,"echo":false,"script":null)
+ ]
+}
 
 [layer_names]
 
+2d_physics/layer_18="ENEMY_GOAL"
 2d_physics/layer_19="HAZARD"
 2d_physics/layer_20="PICKUP"
 
