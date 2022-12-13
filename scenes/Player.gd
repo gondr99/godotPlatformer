@@ -2,6 +2,7 @@ extends KinematicBody2D
 class_name PlayerGD
 
 signal died
+#이런 시그널들은 노드 탭에 시그널을 보면 나온다.
 
 enum State { NORMAL, DASHING }
 

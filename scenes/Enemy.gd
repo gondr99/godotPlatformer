@@ -2,19 +2,20 @@ extends KinematicBody2D
 
 class_name EnemySpike
 
-enum Direction { LEFT, RIGHT }
-export (Direction) var startDirection
+
 
 export (float) var maxSpeed: float = 25
 var velocity: Vector2 = Vector2.ZERO
 var direction: Vector2
 var gravity = 1000
+var startDirection: Vector2 = Vector2.RIGHT
 
 #Layer는 해당 물체의 피직스가 어느 레이어 있을 것인가를 체크하는것이고
 #Mask는 해당 물체가 어느 레이어에 있는 애랑 충돌을 체크할 것인가 에 대한 문제이다.
 
 func _ready():
-	direction = Vector2.RIGHT if startDirection == Direction.RIGHT else Vector2.LEFT
+	#direction = Vector2.RIGHT if startDirection == Direction.RIGHT else Vector2.LEFT
+	direction = startDirection
 	$GoalDetector.connect("area_entered", self, "on_goal_entered")
 	$HitBoxArea2D.connect("area_entered", self, "on_hitbox_entered")
 

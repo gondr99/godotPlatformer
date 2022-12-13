@@ -73,7 +73,7 @@ animations = [ {
 "speed": 7.0
 } ]
 
-[node name="Coin" type="Node2D"]
+[node name="Coin" type="Node2D" groups=["coin"]]
 script = ExtResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

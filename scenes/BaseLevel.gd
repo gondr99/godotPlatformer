@@ -1,17 +1,23 @@
 extends Node
-
-
+class_name BaseLevel
+#코인이 변경되었을 때 
+signal coin_total_changed
 
 #프리팹 사전로드
 const PlayerScene = preload("res://scenes/Player.tscn")
 
 var spawnPosition :Vector2 = Vector2.ZERO
 var currentPlayerNode : PlayerGD = null
+var totalCoins:int = 0
+var collectedCoins:int = 0;
+
 
 func _ready():
 	spawnPosition = $Player.global_position #시작위치를 스폰 포지션으로 설정
 	register_player($Player)
 	
+	coin_total_changed( get_tree().get_nodes_in_group("coin").size()) 
+	#맨처음 코인들을 전부 세서 등록
 
 func register_player(player):
 	currentPlayerNode = player #넘어온 플레이어를 전역변수인 currentPlayerNode에 넣는다.
@@ -30,3 +36,12 @@ func create_player():
 func on_player_died():
 	currentPlayerNode.queue_free() #삭제
 	create_player()
+
+func coin_collected():
+	collectedCoins+= 1
+	print(totalCoins, " ", collectedCoins)
+	emit_signal("coin_total_changed", totalCoins, collectedCoins)
+	
+func coin_total_changed(newTotal : int):
+	totalCoins = newTotal
+	emit_signal("coin_total_changed", totalCoins, collectedCoins)
