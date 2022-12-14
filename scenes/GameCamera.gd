@@ -19,12 +19,18 @@ func _process(delta):
 
 
 func acquire_target_position() :
+	
 	if is_instance_valid(target) == false :   #g
-		find_player()
+		if find_player() == false: 
+			return
 	targetPosition = target.global_position
 	
 #이건 내가 짠거야. 원래 코드는 process에서 계속 찾음
-func find_player():
+func find_player()->bool:
 	var targets = get_tree().get_nodes_in_group("player")
 	if targets.size() > 0 : 
 		target = targets[0];
+		return true
+	else :
+		return false
+		

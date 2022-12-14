@@ -36,6 +36,10 @@ config/name="Godotplatformer"
 run/main_scene="res://scenes/Main.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+LevelManager="*res://scenes/LevelManager.tscn"
+
 [display]
 
 window/size/width=320

@@ -3,6 +3,8 @@ class_name BaseLevel
 #코인이 변경되었을 때 
 signal coin_total_changed
 
+export(PackedScene) var levelCompleteScene : PackedScene
+
 #프리팹 사전로드
 const PlayerScene = preload("res://scenes/Player.tscn")
 
@@ -18,6 +20,8 @@ func _ready():
 	
 	coin_total_changed( get_tree().get_nodes_in_group("coin").size()) 
 	#맨처음 코인들을 전부 세서 등록
+	
+	$Flag.connect("player_won", self, "on_player_won");
 
 func register_player(player):
 	currentPlayerNode = player #넘어온 플레이어를 전역변수인 currentPlayerNode에 넣는다.
@@ -45,3 +49,12 @@ func coin_collected():
 func coin_total_changed(newTotal : int):
 	totalCoins = newTotal
 	emit_signal("coin_total_changed", totalCoins, collectedCoins)
+	
+func on_player_won():
+	#$"/root/LevelManager".change_level()
+	#LevelManager.increment_level()
+	currentPlayerNode.queue_free()  #플레이어는 삭제한다. 이렇게 하지 말고 플레이어가 깃발에서 춤추는 게 더 좋을듯
+	
+	var completeScene = levelCompleteScene.instance()
+	add_child(completeScene)
+	
