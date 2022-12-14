@@ -34,5 +34,6 @@ func on_goal_entered(_other):
 	direction *= -1 #플립
 	
 func on_hitbox_entered(_other):
+	Helper.apply_camera_shake(1, 0.3)
 	queue_free()
 	

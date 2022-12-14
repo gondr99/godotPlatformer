@@ -1,11 +1,25 @@
 extends Camera2D
 
+class_name MainCamera
+
 var targetPosition
 var target: Node2D
 
 #인스펙터에 변수를 노출 시키기 위한 키워드
 export(Color, RGB) var backgroundColor
 export(float) var lerpFactor
+export(OpenSimplexNoise) var shakeNoise : OpenSimplexNoise
+
+var xNoiseSampleVector:Vector2 = Vector2.RIGHT
+var yNoiseSampleVector:Vector2 = Vector2.DOWN
+
+var xNoiseSamplePos:Vector2 = Vector2.ZERO
+var yNoiseSamplePos:Vector2 = Vector2.ZERO
+
+var noiseSampleTravelRate:float = 500 #초당 500픽셀
+var maxShakeOffset:float = 8 
+var currentShakePercentage:float = 0
+var shakeDecay:float = 4   #흔들림을 0.25초에 끝낸다.
 
 func _ready():
 	#Server for anything visible. The visual server is the API backend for everything visible. The whole scene system mounts on it to display.
@@ -16,7 +30,22 @@ func _process(delta):
 	acquire_target_position()
 
 	global_position = lerp(global_position, targetPosition, delta * lerpFactor)
-
+	
+#	if Input.is_action_just_pressed("jump"):
+#		apply_shake(1)
+	
+	if currentShakePercentage > 0:
+		xNoiseSamplePos += xNoiseSampleVector * noiseSampleTravelRate * delta
+		yNoiseSamplePos += yNoiseSampleVector * noiseSampleTravelRate * delta
+		var xSample = shakeNoise.get_noise_2d(xNoiseSamplePos.x, xNoiseSamplePos.y)
+		var ySample = shakeNoise.get_noise_2d(yNoiseSamplePos.x, yNoiseSamplePos.y)
+		
+		var calcOffset = Vector2(xSample, ySample) * maxShakeOffset * pow(currentShakePercentage, 2)
+		
+		self.offset = calcOffset #카메라의 오프셋에 값 넣기
+		
+		currentShakePercentage = clamp(currentShakePercentage - shakeDecay * delta, 0, 1)
+		
 
 func acquire_target_position() :
 	
@@ -34,3 +63,7 @@ func find_player()->bool:
 	else :
 		return false
 		
+func apply_shake(percentage: float, time:float = 0.25):
+	currentShakePercentage = clamp(currentShakePercentage + percentage, 0, 1) #0 ~ 1사이의 퍼센트
+	shakeDecay = 1 / time 
+	

@@ -68,7 +68,9 @@ func process_normal(delta):
 	
 	if moveVector.y <0 && (is_on_floor() || !$CoyoteTimer.is_stopped() || hasDoubleJump) :
 		velocity.y = moveVector.y * jumpSpeed
+		
 		if !is_on_floor() && $CoyoteTimer.is_stopped() :  #만약 공중에 있는 상태에서 점프를 사용했다면 더블점프를 비활성화 시킨다.
+			Helper.apply_camera_shake(0.75, 0.25)
 			hasDoubleJump = false
 		$CoyoteTimer.stop()  #코요테 시간동안 빠르게 2번 점프가 눌리면 씹히니까 한번 코요테 타임을 사용했다면 비활성화해줘야 한다.
 	
@@ -99,6 +101,7 @@ func process_normal(delta):
 #대시 키를 눌렀을 때 작동
 func process_dash(delta):
 	if isStateNew == true :
+		Helper.apply_camera_shake(0.75, 0.4)
 		$HazardArea2D.collision_mask = dashHazardMask  #대시할때는 적에게 맞아죽지 않게
 		$DashArea2D/CollisionShape2D.disabled = false
 		$AnimatedPlayerSprite.play("jump")
