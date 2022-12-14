@@ -24,7 +24,7 @@ var shakeDecay:float = 4   #흔들림을 0.25초에 끝낸다.
 func _ready():
 	#Server for anything visible. The visual server is the API backend for everything visible. The whole scene system mounts on it to display.
 	VisualServer.set_default_clear_color(backgroundColor)
-	find_player()
+	find_player("player")
 	
 func _process(delta):
 	acquire_target_position()
@@ -50,13 +50,15 @@ func _process(delta):
 func acquire_target_position() :
 	
 	if is_instance_valid(target) == false :   #g
-		if find_player() == false: 
-			return
-	targetPosition = target.global_position
+		if find_player("player") == false : 
+			if find_player("player_death") == false:
+				print("시체가 없어요")
 	
+	targetPosition = target.global_position	
+
 #이건 내가 짠거야. 원래 코드는 process에서 계속 찾음
-func find_player()->bool:
-	var targets = get_tree().get_nodes_in_group("player")
+func find_player(group: String )->bool:
+	var targets = get_tree().get_nodes_in_group(group)
 	if targets.size() > 0 : 
 		target = targets[0];
 		return true
@@ -66,4 +68,7 @@ func find_player()->bool:
 func apply_shake(percentage: float, time:float = 0.25):
 	currentShakePercentage = clamp(currentShakePercentage + percentage, 0, 1) #0 ~ 1사이의 퍼센트
 	shakeDecay = 1 / time 
+	
+func resetPlayer():
+	find_player("player")
 	

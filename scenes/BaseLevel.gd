@@ -15,8 +15,8 @@ var collectedCoins:int = 0;
 
 
 func _ready():
-	spawnPosition = $Player.global_position #시작위치를 스폰 포지션으로 설정
-	register_player($Player)
+	spawnPosition = $PlayerRoot/Player.global_position #시작위치를 스폰 포지션으로 설정
+	register_player($PlayerRoot/Player)
 	
 	coin_total_changed( get_tree().get_nodes_in_group("coin").size()) 
 	#맨처음 코인들을 전부 세서 등록
@@ -26,20 +26,26 @@ func _ready():
 func register_player(player):
 	currentPlayerNode = player #넘어온 플레이어를 전역변수인 currentPlayerNode에 넣는다.
 	currentPlayerNode.connect("died", self, "on_player_died",[], CONNECT_DEFERRED)
-	
 	#플레이어의 시그널 커넥션, DEFERRED로 하면 시그널은 일단 큐로 들어가고 idle타임에 실행된다.
+	#다시 생성한 플레이어를 찾아가라고 카메라에게 지정한다.
+	$GameCamera.resetPlayer()
 	
 func create_player():
 	var playerInstance = PlayerScene.instance()
 	#해당 하는 노드의 바로 아래에 놓는다. 노드의 순서가 그려지는 순서라서 
-	add_child_below_node(currentPlayerNode, playerInstance)
+	#add_child_below_node(currentPlayerNode, playerInstance)
+	$PlayerRoot.add_child(playerInstance)
 	playerInstance.global_position = spawnPosition
 	register_player(playerInstance)
 	
 #플레이어 사망시에 실행하게 될 함수
 func on_player_died():
 	currentPlayerNode.queue_free() #삭제
+	
+	var timer = get_tree().create_timer(2)   #이렇게 하면 할때마다 타이머가 생성되버린다.
+	yield (timer, "timeout")
 	create_player()
+	
 
 func coin_collected():
 	collectedCoins+= 1

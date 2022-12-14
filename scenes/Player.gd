@@ -3,9 +3,10 @@ class_name PlayerGD
 
 signal died
 #이런 시그널들은 노드 탭에 시그널을 보면 나온다.
+var playerDeathScene : PackedScene = preload("res://scenes/PlayerDeath.tscn")
+
 
 enum State { NORMAL, DASHING }
-
 
 
 var gravity = 1000
@@ -22,6 +23,8 @@ var currentState = State.NORMAL
 var hasDoubleJump: bool = false  #더블점프 했냐 
 var hasDash: bool = false #대시 가지고 있냐?
 
+var isDying: bool = false 
+
 var isStateNew: bool = false # 새로운 상태로 전환되었는가?
 
 var defaultHazardMask = 0  #기본 위협 충돌 마스크
@@ -32,6 +35,7 @@ export(float) var lerpFactor = 1.8
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+# warning-ignore:return_value_discarded
 	$HazardArea2D.connect("area_entered", self, "on_hazard_area_entered")
 	defaultHazardMask = $HazardArea2D.collision_mask
 
@@ -146,4 +150,18 @@ func update_animation():
 		
 func on_hazard_area_entered(_other_area2d):
 	#print("Die")
+	Helper.apply_camera_shake(1, 0.3)
+	call_deferred("kill")
+	
+func kill():
+	if isDying == true : 
+		return
+	isDying = true
+	var playerDeathInstance = playerDeathScene.instance()
+	playerDeathInstance.velocity = velocity
+	
+	#이순간 ready가 발생한다.
+	get_parent().add_child_below_node(self, playerDeathInstance) 
+	playerDeathInstance.global_position = global_position
+	
 	emit_signal("died")
