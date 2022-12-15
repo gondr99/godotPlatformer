@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/GameCamera.tscn" type="PackedScene" id=2]
@@ -7,12 +7,23 @@
 [ext_resource path="res://resources/platforms.tres" type="TileSet" id=5]
 [ext_resource path="res://scenes/UI/LevelComplete.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/BaseLevel.gd" type="Script" id=7]
+[ext_resource path="res://resources/decorated.tres" type="TileSet" id=8]
 
 [node name="BaseLevel" type="Node" groups=["base_level"]]
 script = ExtResource( 7 )
 levelCompleteScene = ExtResource( 6 )
 
 [node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource( 5 )
+cell_size = Vector2( 18, 18 )
+format = 1
+
+[node name="DecoratedTilemap" type="TileMap" parent="."]
+tile_set = ExtResource( 8 )
+cell_size = Vector2( 18, 18 )
+format = 1
+
+[node name="ForegroundTilemap" type="TileMap" parent="."]
 tile_set = ExtResource( 5 )
 cell_size = Vector2( 18, 18 )
 format = 1
