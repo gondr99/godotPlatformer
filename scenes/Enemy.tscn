@@ -157,7 +157,7 @@ next/default = "default"
 next/spawn = "default"
 
 [node name="GoalDetector" type="Area2D" parent="."]
-collision_layer = 131072
+collision_layer = 0
 collision_mask = 131072
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GoalDetector"]

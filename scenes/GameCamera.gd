@@ -52,7 +52,7 @@ func acquire_target_position() :
 	if is_instance_valid(target) == false :   #g
 		if find_player("player") == false : 
 			if find_player("player_death") == false:
-				print("시체가 없어요")
+				#print("시체가 없어요")
 				return
 	
 	targetPosition = target.global_position	
