@@ -38,6 +38,7 @@ func _ready():
 # warning-ignore:return_value_discarded
 	$HazardArea2D.connect("area_entered", self, "on_hazard_area_entered")
 	defaultHazardMask = $HazardArea2D.collision_mask
+	$DashParticles.emitting = false
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -57,6 +58,7 @@ func change_state(newState):
 
 func process_normal(delta):
 	if isStateNew == true :
+		$DashParticles.emitting = false
 		$DashArea2D/CollisionShape2D.disabled = true
 		$HazardArea2D.collision_mask = defaultHazardMask #기본 마스크로 변경
 		
@@ -106,6 +108,7 @@ func process_normal(delta):
 func process_dash(delta):
 	if isStateNew == true :
 		Helper.apply_camera_shake(0.75, 0.4)
+		$DashParticles.emitting = true
 		$HazardArea2D.collision_mask = dashHazardMask  #대시할때는 적에게 맞아죽지 않게
 		$DashArea2D/CollisionShape2D.disabled = false
 		$AnimatedPlayerSprite.play("jump")
