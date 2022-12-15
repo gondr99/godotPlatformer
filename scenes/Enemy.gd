@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 class_name EnemySpike
 
-
+var enemyDeathScene : PackedScene = preload("res://scenes/EnemyDeath.tscn")
 
 export (float) var maxSpeed: float = 25
 var velocity: Vector2 = Vector2.ZERO
@@ -35,5 +35,13 @@ func on_goal_entered(_other):
 	
 func on_hitbox_entered(_other):
 	Helper.apply_camera_shake(1, 0.3)
+	call_deferred("kill")
+	
+func kill():
+	var deathInstance : Node2D = enemyDeathScene.instance() 
+	get_parent().add_child(deathInstance) #enemies에 죽은 시체를 올려둔다.
+	deathInstance.global_position = global_position
+	if velocity.x > 0 :
+		deathInstance.scale = Vector2(-1, 1)
 	queue_free()
 	
