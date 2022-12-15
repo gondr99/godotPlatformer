@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/GameCamera.tscn" type="PackedScene" id=2]
@@ -8,10 +8,16 @@
 [ext_resource path="res://scenes/UI/LevelComplete.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/BaseLevel.gd" type="Script" id=7]
 [ext_resource path="res://resources/decorated.tres" type="TileSet" id=8]
+[ext_resource path="res://scenes/Clouds.tscn" type="PackedScene" id=9]
 
 [node name="BaseLevel" type="Node" groups=["base_level"]]
 script = ExtResource( 7 )
 levelCompleteScene = ExtResource( 6 )
+
+[node name="GameCamera" parent="." instance=ExtResource( 2 )]
+lerpFactor = 20.0
+
+[node name="Clouds" parent="GameCamera" instance=ExtResource( 9 )]
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = ExtResource( 5 )
@@ -27,9 +33,6 @@ format = 1
 tile_set = ExtResource( 5 )
 cell_size = Vector2( 18, 18 )
 format = 1
-
-[node name="GameCamera" parent="." instance=ExtResource( 2 )]
-lerpFactor = 20.0
 
 [node name="Flag" parent="." instance=ExtResource( 3 )]
 
