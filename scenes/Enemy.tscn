@@ -1,8 +1,125 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://assets/enemy/character_0016.png" type="Texture" id=1]
 [ext_resource path="res://assets/enemy/character_0015.png" type="Texture" id=2]
 [ext_resource path="res://scenes/Enemy.gd" type="Script" id=3]
+[ext_resource path="res://assets/enemy/character_0017.png" type="Texture" id=4]
+
+[sub_resource type="Animation" id=7]
+resource_name = "default"
+tracks/0/type = "value"
+tracks/0/path = NodePath("HazardArea/CollisionShape2D:disabled")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("HitBoxArea2D/CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Visuals/AnimatedSprite:animation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "run" ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Visuals:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath(".:isSpawning")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "spawn"
+length = 0.75
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Visuals/AnimatedSprite:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "spawn" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Visuals:scale")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.25, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 1.2, 1.2 ), Vector2( 1, 1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("HazardArea/CollisionShape2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("HitBoxArea2D/CollisionShape2D:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
 
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 5, 6 )
@@ -16,6 +133,11 @@ animations = [ {
 "loop": true,
 "name": "run",
 "speed": 10.0
+}, {
+"frames": [ ExtResource( 4 ) ],
+"loop": true,
+"name": "spawn",
+"speed": 5.0
 } ]
 
 [sub_resource type="CircleShape2D" id=4]
@@ -26,6 +148,13 @@ radius = 4.03113
 [node name="Enemy" type="KinematicBody2D"]
 collision_layer = 0
 script = ExtResource( 3 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "spawn"
+anims/default = SubResource( 7 )
+anims/spawn = SubResource( 6 )
+next/default = "default"
+next/spawn = "default"
 
 [node name="GoalDetector" type="Area2D" parent="."]
 collision_layer = 131072
@@ -39,9 +168,11 @@ shape = SubResource( 3 )
 position = Vector2( 0, -9 )
 shape = SubResource( 2 )
 
-[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Visuals"]
 frames = SubResource( 1 )
-animation = "run"
+animation = "spawn"
 playing = true
 offset = Vector2( 0, -12 )
 
@@ -53,6 +184,7 @@ collision_mask = 262144
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HazardArea"]
 position = Vector2( -1, -16 )
 shape = SubResource( 4 )
+disabled = true
 
 [node name="HitBoxArea2D" type="Area2D" parent="."]
 position = Vector2( 0, -8 )
@@ -61,3 +193,4 @@ collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBoxArea2D"]
 shape = SubResource( 5 )
+disabled = true

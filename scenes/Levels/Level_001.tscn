@@ -15,7 +15,7 @@ tile_data = PoolIntArray( -1376297, 0, 0, -1376296, 0, 1, -1376295, 0, 1, -13762
 position = Vector2( -52, -251 )
 
 [node name="EnemySpawner" parent="Enemies" index="0" instance=ExtResource( 6 )]
-position = Vector2( -395, -61 )
+position = Vector2( -396, -54 )
 startDirection = 1
 
 [node name="EnemyGoal" parent="Enemies" index="1" instance=ExtResource( 4 )]
