@@ -3,8 +3,10 @@ class_name PlayerGD
 
 signal died
 #이런 시그널들은 노드 탭에 시그널을 보면 나온다.
-var playerDeathScene : PackedScene = preload("res://scenes/PlayerDeath.tscn")
 
+#사전 프리팩 로드
+var playerDeathScene : PackedScene = preload("res://scenes/PlayerDeath.tscn")
+var footstepParticle : PackedScene = preload("res://scenes/FootstepParticles.tscn")
 
 enum State { NORMAL, DASHING }
 
@@ -25,7 +27,7 @@ var hasDash: bool = false #대시 가지고 있냐?
 
 var isDying: bool = false 
 
-var isStateNew: bool = false # 새로운 상태로 전환되었는가?
+var isStateNew: bool = true # 새로운 상태로 전환되었는가?
 
 var defaultHazardMask = 0  #기본 위협 충돌 마스크
 
@@ -39,6 +41,8 @@ func _ready():
 	$HazardArea2D.connect("area_entered", self, "on_hazard_area_entered")
 	defaultHazardMask = $HazardArea2D.collision_mask
 	$DashParticles.emitting = false
+	
+	$AnimatedPlayerSprite.connect("frame_changed", self, "on_animated_sprte_frame_changed")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -90,10 +94,14 @@ func process_normal(delta):
 	var wasOnFlor = is_on_floor()
 	velocity = move_and_slide(velocity, Vector2.UP) #실제로 이만큼을 이동시키고 난뒤 velocity를 반환하는 매서드
 	
-	if(wasOnFlor && !is_on_floor()):
+	#지금 막 땅에 착지했다면
+	if !wasOnFlor && is_on_floor() && !isStateNew:
+		generate_footstep_particles(1.5)
+	
+	if wasOnFlor && !is_on_floor():
 		$CoyoteTimer.start()
 	
-	if(is_on_floor()):
+	if is_on_floor():
 		hasDoubleJump = true
 		hasDash = true #땅에 닿으면 다시 대시 가능
 	
@@ -168,3 +176,13 @@ func kill():
 	playerDeathInstance.global_position = global_position
 	
 	emit_signal("died")
+
+func on_animated_sprte_frame_changed():
+	if $AnimatedPlayerSprite.animation == "run" && $AnimatedPlayerSprite.frame == 0:     #발이 땅에 닿았어
+		generate_footstep_particles()
+		
+func generate_footstep_particles(scale:float = 1):
+	var footstep = footstepParticle.instance()
+	get_parent().add_child(footstep)
+	footstep.scale = Vector2.ONE * scale
+	footstep.global_position = global_position

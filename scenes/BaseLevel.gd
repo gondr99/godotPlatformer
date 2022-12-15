@@ -49,7 +49,7 @@ func on_player_died():
 
 func coin_collected():
 	collectedCoins+= 1
-	print(totalCoins, " ", collectedCoins)
+	#print(totalCoins, " ", collectedCoins)
 	emit_signal("coin_total_changed", totalCoins, collectedCoins)
 	
 func coin_total_changed(newTotal : int):
